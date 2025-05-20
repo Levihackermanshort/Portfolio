@@ -1,30 +1,443 @@
-// Initialize particles.js
-document.addEventListener('DOMContentLoaded', () => {
-    if (typeof particlesJS !== 'undefined') {
-        particlesJS('particles-js', {
-            particles: {
-                number: { value: 80, density: { enable: true, value_area: 800 } },
-                color: { value: '#00fff7' },
-                shape: { type: 'circle' },
-                opacity: { value: 0.5, random: false },
-                size: { value: 3, random: true },
-                line_linked: { enable: true, distance: 150, color: '#00fff7', opacity: 0.4, width: 1 },
-                move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out' }
-            },
-            interactivity: {
-                detect_on: 'canvas',
-                events: {
-                    onhover: { enable: true, mode: 'grab' },
-                    onclick: { enable: true, mode: 'push' },
-                    resize: true
+// Define global objects
+const achievements = {
+    badges: {
+        explorer: { progress: 0, max: 7, unlocked: false },
+        coder: { progress: 0, max: 1, unlocked: false },
+        gamer: { progress: 0, max: 2, unlocked: false },
+        secret: { progress: 0, max: 3, unlocked: false }
+    },
+    
+    init() {
+        this.loadProgress();
+        this.setupSectionTracking();
+        this.updateBadgeDisplay();
+    },
+    
+    loadProgress() {
+        const saved = localStorage.getItem('achievements');
+        if (saved) {
+            this.badges = JSON.parse(saved);
+        }
+    },
+    
+    saveProgress() {
+        localStorage.setItem('achievements', JSON.stringify(this.badges));
+    },
+    
+    updateProgress(badge, amount = 1) {
+        if (!this.badges[badge].unlocked) {
+            this.badges[badge].progress += amount;
+            if (this.badges[badge].progress >= this.badges[badge].max) {
+                this.badges[badge].unlocked = true;
+                this.showUnlockNotification(badge);
+            }
+            this.updateBadgeDisplay();
+            this.saveProgress();
+        }
+    },
+    
+    updateBadgeDisplay() {
+        Object.entries(this.badges).forEach(([badge, data]) => {
+            const card = document.querySelector(`[data-badge="${badge}"]`);
+            if (card) {
+                const progress = (data.progress / data.max) * 100;
+                const progressBar = card.querySelector('.progress-bar');
+                if (progressBar) {
+                    progressBar.style.width = `${progress}%`;
+                    
+                    if (data.unlocked) {
+                        card.classList.add('unlocked');
+                        progressBar.style.width = '100%';
+                    }
                 }
+            }
+        });
+    },
+    
+    showUnlockNotification(badge) {
+        const badgeNames = {
+            explorer: 'Explorer',
+            coder: 'Code Master',
+            gamer: 'Gamer',
+            secret: 'Secret Finder'
+        };
+        
+        showNotification(`Achievement Unlocked: ${badgeNames[badge]}!`, 'success');
+    },
+    
+    setupSectionTracking() {
+        const sections = document.querySelectorAll('section');
+        const visited = new Set();
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.id;
+                    if (!visited.has(sectionId)) {
+                        visited.add(sectionId);
+                        this.updateProgress('explorer');
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        sections.forEach(section => observer.observe(section));
+    }
+};
+
+const snakeGame = {
+    canvas: null,
+    ctx: null,
+    snake: [],
+    food: null,
+    direction: 'right',
+    score: 0,
+    gameLoop: null,
+    gridSize: 20,
+    
+    init() {
+        this.canvas = document.getElementById('snakeCanvas');
+        if (!this.canvas) {
+            console.error('Snake canvas not found');
+            return;
+        }
+        this.ctx = this.canvas.getContext('2d');
+        this.setupEventListeners();
+    },
+    
+    setupEventListeners() {
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowUp': if (this.direction !== 'down') this.direction = 'up'; break;
+                case 'ArrowDown': if (this.direction !== 'up') this.direction = 'down'; break;
+                case 'ArrowLeft': if (this.direction !== 'right') this.direction = 'left'; break;
+                case 'ArrowRight': if (this.direction !== 'left') this.direction = 'right'; break;
+            }
+        });
+    },
+    
+    start() {
+        if (!this.ctx) return;
+        this.snake = [{x: 5, y: 5}];
+        this.direction = 'right';
+        this.score = 0;
+        this.generateFood();
+        
+        if (this.gameLoop) clearInterval(this.gameLoop);
+        this.gameLoop = setInterval(() => this.update(), 150);
+    },
+    
+    update() {
+        const head = {...this.snake[0]};
+        
+        switch(this.direction) {
+            case 'up': head.y--; break;
+            case 'down': head.y++; break;
+            case 'left': head.x--; break;
+            case 'right': head.x++; break;
+        }
+        
+        if (this.checkCollision(head)) {
+            this.gameOver();
+            return;
+        }
+        
+        this.snake.unshift(head);
+        
+        if (head.x === this.food.x && head.y === this.food.y) {
+            this.score++;
+            this.generateFood();
+            if (typeof achievements !== 'undefined') {
+                achievements.updateProgress('gamer');
+            }
+        } else {
+            this.snake.pop();
+        }
+        
+        this.draw();
+    },
+    
+    draw() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw snake
+        this.ctx.fillStyle = '#00f2fe';
+        this.snake.forEach(segment => {
+            this.ctx.fillRect(
+                segment.x * this.gridSize,
+                segment.y * this.gridSize,
+                this.gridSize - 2,
+                this.gridSize - 2
+            );
+        });
+        
+        // Draw food
+        this.ctx.fillStyle = '#ff00ff';
+        this.ctx.fillRect(
+            this.food.x * this.gridSize,
+            this.food.y * this.gridSize,
+            this.gridSize - 2,
+            this.gridSize - 2
+        );
+    },
+    
+    generateFood() {
+        this.food = {
+            x: Math.floor(Math.random() * (this.canvas.width / this.gridSize)),
+            y: Math.floor(Math.random() * (this.canvas.height / this.gridSize))
+        };
+    },
+    
+    checkCollision(head) {
+        return (
+            head.x < 0 ||
+            head.x >= this.canvas.width / this.gridSize ||
+            head.y < 0 ||
+            head.y >= this.canvas.height / this.gridSize ||
+            this.snake.some(segment => segment.x === head.x && segment.y === head.y)
+        );
+    },
+    
+    gameOver() {
+        clearInterval(this.gameLoop);
+        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = '20px JetBrains Mono';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(`Game Over! Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 2);
+    }
+};
+
+const typingTest = {
+    texts: [
+        "const greeting = 'Hello, World!';",
+        "function calculateSum(a, b) { return a + b; }",
+        "class Developer { constructor(name) { this.name = name; } }",
+        "async function fetchData() { const response = await fetch(url); }"
+    ],
+    currentText: '',
+    startTime: null,
+    isActive: false,
+    
+    init() {
+        this.setupEventListeners();
+    },
+    
+    setupEventListeners() {
+        const input = document.querySelector('.typing-input');
+        const startBtn = document.querySelector('[data-game="typing"] .play-btn');
+        
+        if (startBtn) {
+            startBtn.addEventListener('click', () => this.start());
+        }
+        if (input) {
+            input.addEventListener('input', () => this.checkProgress());
+        }
+    },
+    
+    start() {
+        this.currentText = this.texts[Math.floor(Math.random() * this.texts.length)];
+        const textElement = document.querySelector('.typing-text');
+        const input = document.querySelector('.typing-input');
+        
+        if (textElement && input) {
+            textElement.textContent = this.currentText;
+            input.value = '';
+            this.startTime = Date.now();
+            this.isActive = true;
+            input.focus();
+        }
+    },
+    
+    checkProgress() {
+        if (!this.isActive) return;
+        
+        const input = document.querySelector('.typing-input');
+        const text = document.querySelector('.typing-text');
+        const stats = document.querySelector('.typing-stats');
+        
+        if (!input || !text || !stats) return;
+        
+        const inputText = input.value;
+        const correctChars = this.currentText.split('').filter((char, i) => char === inputText[i]).length;
+        const accuracy = (correctChars / inputText.length) * 100 || 0;
+        
+        const timeElapsed = (Date.now() - this.startTime) / 1000 / 60; // in minutes
+        const words = inputText.length / 5;
+        const wpm = Math.round(words / timeElapsed) || 0;
+        
+        stats.querySelector('.wpm').textContent = `WPM: ${wpm}`;
+        stats.querySelector('.accuracy').textContent = `Accuracy: ${Math.round(accuracy)}%`;
+        
+        if (inputText === this.currentText) {
+            this.complete();
+        }
+    },
+    
+    complete() {
+        this.isActive = false;
+        if (typeof achievements !== 'undefined') {
+            achievements.updateProgress('coder');
+        }
+        showNotification('Typing test completed!', 'success');
+    }
+};
+
+const easterEggs = {
+    konamiCode: ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
+    konamiIndex: 0,
+    
+    init() {
+        this.setupKonamiCode();
+        this.setupSecretCommands();
+    },
+    
+    setupKonamiCode() {
+        document.addEventListener('keydown', (e) => {
+            if (e.key === this.konamiCode[this.konamiIndex]) {
+                this.konamiIndex++;
+                if (this.konamiIndex === this.konamiCode.length) {
+                    this.activateKonamiCode();
+                    this.konamiIndex = 0;
+                }
+            } else {
+                this.konamiIndex = 0;
+            }
+        });
+    },
+    
+    activateKonamiCode() {
+        document.body.classList.add('konami-mode');
+        if (typeof achievements !== 'undefined') {
+            achievements.updateProgress('secret');
+        }
+        showNotification('Secret theme unlocked!', 'success');
+        
+        setTimeout(() => {
+            document.body.classList.remove('konami-mode');
+        }, 10000);
+    },
+    
+    setupSecretCommands() {
+        const secretCommands = {
+            'matrix': () => {
+                document.body.classList.add('matrix-mode');
+                if (typeof achievements !== 'undefined') {
+                    achievements.updateProgress('secret');
+                }
+                showNotification('Matrix mode activated!', 'success');
             },
-            retina_detect: true
+            'hack': () => {
+                const elements = document.querySelectorAll('*');
+                elements.forEach(el => {
+                    el.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    setTimeout(() => {
+                        el.style.transform = '';
+                    }, 1000);
+                });
+                if (typeof achievements !== 'undefined') {
+                    achievements.updateProgress('secret');
+                }
+                showNotification('System hacked!', 'success');
+            }
+        };
+        
+        let currentInput = '';
+        document.addEventListener('keydown', (e) => {
+            currentInput += e.key;
+            Object.keys(secretCommands).forEach(cmd => {
+                if (currentInput.endsWith(cmd)) {
+                    secretCommands[cmd]();
+                    currentInput = '';
+                }
+            });
+            
+            if (currentInput.length > 10) {
+                currentInput = currentInput.slice(-10);
+            }
         });
     }
+};
 
-    // Initialize all other features
-    initializeFeatures();
+// Initialize particles.js
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded');
+    
+    try {
+        // Initialize particles.js
+        if (typeof particlesJS !== 'undefined') {
+            console.log('Initializing particles.js');
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: '#00fff7' },
+                    shape: { type: 'circle' },
+                    opacity: { value: 0.5, random: false },
+                    size: { value: 3, random: true },
+                    line_linked: { enable: true, distance: 150, color: '#00fff7', opacity: 0.4, width: 1 },
+                    move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out' }
+                },
+                interactivity: {
+                    detect_on: 'canvas',
+                    events: {
+                        onhover: { enable: true, mode: 'grab' },
+                        onclick: { enable: true, mode: 'push' },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+        } else {
+            console.error('particles.js is not loaded');
+        }
+
+        // Initialize all other features
+        console.log('Initializing features');
+        initializeFeatures();
+        
+        // Initialize achievements system
+        console.log('Initializing achievements');
+        if (typeof achievements !== 'undefined') {
+            achievements.init();
+        } else {
+            console.error('Achievements system is not defined');
+        }
+
+        // Initialize games
+        console.log('Initializing games');
+        if (typeof snakeGame !== 'undefined') {
+            snakeGame.init();
+        } else {
+            console.error('Snake game is not defined');
+        }
+        
+        if (typeof typingTest !== 'undefined') {
+            typingTest.init();
+        } else {
+            console.error('Typing test is not defined');
+        }
+
+        // Initialize easter eggs
+        console.log('Initializing easter eggs');
+        if (typeof easterEggs !== 'undefined') {
+            easterEggs.init();
+        } else {
+            console.error('Easter eggs system is not defined');
+        }
+
+        // Setup game buttons
+        const snakeButton = document.querySelector('[data-game="snake"] .play-btn');
+        if (snakeButton) {
+            snakeButton.addEventListener('click', () => {
+                if (typeof snakeGame !== 'undefined') {
+                    snakeGame.start();
+                }
+            });
+        }
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
 });
 
 function initializeFeatures() {
@@ -685,355 +1098,6 @@ Contact Information:
 // Initialize terminal
 terminal.init();
 
-// Achievements System
-const achievements = {
-    badges: {
-        explorer: { progress: 0, max: 7, unlocked: false },
-        coder: { progress: 0, max: 1, unlocked: false },
-        gamer: { progress: 0, max: 2, unlocked: false },
-        secret: { progress: 0, max: 3, unlocked: false }
-    },
-    
-    init() {
-        this.loadProgress();
-        this.setupSectionTracking();
-        this.updateBadgeDisplay();
-    },
-    
-    loadProgress() {
-        const saved = localStorage.getItem('achievements');
-        if (saved) {
-            this.badges = JSON.parse(saved);
-        }
-    },
-    
-    saveProgress() {
-        localStorage.setItem('achievements', JSON.stringify(this.badges));
-    },
-    
-    updateProgress(badge, amount = 1) {
-        if (!this.badges[badge].unlocked) {
-            this.badges[badge].progress += amount;
-            if (this.badges[badge].progress >= this.badges[badge].max) {
-                this.badges[badge].unlocked = true;
-                this.showUnlockNotification(badge);
-            }
-            this.updateBadgeDisplay();
-            this.saveProgress();
-        }
-    },
-    
-    updateBadgeDisplay() {
-        Object.entries(this.badges).forEach(([badge, data]) => {
-            const card = document.querySelector(`[data-badge="${badge}"]`);
-            if (card) {
-                const progress = (data.progress / data.max) * 100;
-                const progressBar = card.querySelector('.progress-bar');
-                progressBar.style.width = `${progress}%`;
-                
-                if (data.unlocked) {
-                    card.classList.add('unlocked');
-                    progressBar.style.width = '100%';
-                }
-            }
-        });
-    },
-    
-    showUnlockNotification(badge) {
-        const badgeNames = {
-            explorer: 'Explorer',
-            coder: 'Code Master',
-            gamer: 'Gamer',
-            secret: 'Secret Finder'
-        };
-        
-        showNotification(`Achievement Unlocked: ${badgeNames[badge]}!`, 'success');
-    },
-    
-    setupSectionTracking() {
-        const sections = document.querySelectorAll('section');
-        const visited = new Set();
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const sectionId = entry.target.id;
-                    if (!visited.has(sectionId)) {
-                        visited.add(sectionId);
-                        this.updateProgress('explorer');
-                    }
-                }
-            });
-        }, { threshold: 0.5 });
-        
-        sections.forEach(section => observer.observe(section));
-    }
-};
-
-// Snake Game
-const snakeGame = {
-    canvas: document.getElementById('snakeCanvas'),
-    ctx: null,
-    snake: [],
-    food: null,
-    direction: 'right',
-    score: 0,
-    gameLoop: null,
-    gridSize: 20,
-    
-    init() {
-        this.ctx = this.canvas.getContext('2d');
-        this.setupEventListeners();
-    },
-    
-    setupEventListeners() {
-        document.addEventListener('keydown', (e) => {
-            switch(e.key) {
-                case 'ArrowUp': if (this.direction !== 'down') this.direction = 'up'; break;
-                case 'ArrowDown': if (this.direction !== 'up') this.direction = 'down'; break;
-                case 'ArrowLeft': if (this.direction !== 'right') this.direction = 'left'; break;
-                case 'ArrowRight': if (this.direction !== 'left') this.direction = 'right'; break;
-            }
-        });
-    },
-    
-    start() {
-        this.snake = [{x: 5, y: 5}];
-        this.direction = 'right';
-        this.score = 0;
-        this.generateFood();
-        
-        if (this.gameLoop) clearInterval(this.gameLoop);
-        this.gameLoop = setInterval(() => this.update(), 150);
-    },
-    
-    update() {
-        const head = {...this.snake[0]};
-        
-        switch(this.direction) {
-            case 'up': head.y--; break;
-            case 'down': head.y++; break;
-            case 'left': head.x--; break;
-            case 'right': head.x++; break;
-        }
-        
-        if (this.checkCollision(head)) {
-            this.gameOver();
-            return;
-        }
-        
-        this.snake.unshift(head);
-        
-        if (head.x === this.food.x && head.y === this.food.y) {
-            this.score++;
-            this.generateFood();
-            achievements.updateProgress('gamer');
-        } else {
-            this.snake.pop();
-        }
-        
-        this.draw();
-    },
-    
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Draw snake
-        this.ctx.fillStyle = '#00f2fe';
-        this.snake.forEach(segment => {
-            this.ctx.fillRect(
-                segment.x * this.gridSize,
-                segment.y * this.gridSize,
-                this.gridSize - 2,
-                this.gridSize - 2
-            );
-        });
-        
-        // Draw food
-        this.ctx.fillStyle = '#ff00ff';
-        this.ctx.fillRect(
-            this.food.x * this.gridSize,
-            this.food.y * this.gridSize,
-            this.gridSize - 2,
-            this.gridSize - 2
-        );
-    },
-    
-    generateFood() {
-        this.food = {
-            x: Math.floor(Math.random() * (this.canvas.width / this.gridSize)),
-            y: Math.floor(Math.random() * (this.canvas.height / this.gridSize))
-        };
-    },
-    
-    checkCollision(head) {
-        return (
-            head.x < 0 ||
-            head.x >= this.canvas.width / this.gridSize ||
-            head.y < 0 ||
-            head.y >= this.canvas.height / this.gridSize ||
-            this.snake.some(segment => segment.x === head.x && segment.y === head.y)
-        );
-    },
-    
-    gameOver() {
-        clearInterval(this.gameLoop);
-        this.ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
-        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.fillStyle = '#fff';
-        this.ctx.font = '20px JetBrains Mono';
-        this.ctx.textAlign = 'center';
-        this.ctx.fillText(`Game Over! Score: ${this.score}`, this.canvas.width / 2, this.canvas.height / 2);
-    }
-};
-
-// Typing Test
-const typingTest = {
-    texts: [
-        "const greeting = 'Hello, World!';",
-        "function calculateSum(a, b) { return a + b; }",
-        "class Developer { constructor(name) { this.name = name; } }",
-        "async function fetchData() { const response = await fetch(url); }"
-    ],
-    currentText: '',
-    startTime: null,
-    isActive: false,
-    
-    init() {
-        this.setupEventListeners();
-    },
-    
-    setupEventListeners() {
-        const input = document.querySelector('.typing-input');
-        const startBtn = document.querySelector('[data-game="typing"] .play-btn');
-        
-        startBtn.addEventListener('click', () => this.start());
-        input.addEventListener('input', () => this.checkProgress());
-    },
-    
-    start() {
-        this.currentText = this.texts[Math.floor(Math.random() * this.texts.length)];
-        document.querySelector('.typing-text').textContent = this.currentText;
-        document.querySelector('.typing-input').value = '';
-        this.startTime = Date.now();
-        this.isActive = true;
-        document.querySelector('.typing-input').focus();
-    },
-    
-    checkProgress() {
-        if (!this.isActive) return;
-        
-        const input = document.querySelector('.typing-input');
-        const text = document.querySelector('.typing-text');
-        const stats = document.querySelector('.typing-stats');
-        
-        const inputText = input.value;
-        const correctChars = this.currentText.split('').filter((char, i) => char === inputText[i]).length;
-        const accuracy = (correctChars / inputText.length) * 100 || 0;
-        
-        const timeElapsed = (Date.now() - this.startTime) / 1000 / 60; // in minutes
-        const words = inputText.length / 5;
-        const wpm = Math.round(words / timeElapsed) || 0;
-        
-        stats.querySelector('.wpm').textContent = `WPM: ${wpm}`;
-        stats.querySelector('.accuracy').textContent = `Accuracy: ${Math.round(accuracy)}%`;
-        
-        if (inputText === this.currentText) {
-            this.complete();
-        }
-    },
-    
-    complete() {
-        this.isActive = false;
-        achievements.updateProgress('coder');
-        showNotification('Typing test completed!', 'success');
-    }
-};
-
-// Easter Eggs
-const easterEggs = {
-    konamiCode: ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'],
-    konamiIndex: 0,
-    
-    init() {
-        this.setupKonamiCode();
-        this.setupSecretCommands();
-    },
-    
-    setupKonamiCode() {
-        document.addEventListener('keydown', (e) => {
-            if (e.key === this.konamiCode[this.konamiIndex]) {
-                this.konamiIndex++;
-                if (this.konamiIndex === this.konamiCode.length) {
-                    this.activateKonamiCode();
-                    this.konamiIndex = 0;
-                }
-            } else {
-                this.konamiIndex = 0;
-            }
-        });
-    },
-    
-    activateKonamiCode() {
-        document.body.classList.add('konami-mode');
-        achievements.updateProgress('secret');
-        showNotification('Secret theme unlocked!', 'success');
-        
-        setTimeout(() => {
-            document.body.classList.remove('konami-mode');
-        }, 10000);
-    },
-    
-    setupSecretCommands() {
-        const secretCommands = {
-            'matrix': () => {
-                document.body.classList.add('matrix-mode');
-                achievements.updateProgress('secret');
-                showNotification('Matrix mode activated!', 'success');
-            },
-            'hack': () => {
-                const elements = document.querySelectorAll('*');
-                elements.forEach(el => {
-                    el.style.transform = `rotate(${Math.random() * 360}deg)`;
-                    setTimeout(() => {
-                        el.style.transform = '';
-                    }, 1000);
-                });
-                achievements.updateProgress('secret');
-                showNotification('System hacked!', 'success');
-            }
-        };
-        
-        let currentInput = '';
-        document.addEventListener('keydown', (e) => {
-            currentInput += e.key;
-            Object.keys(secretCommands).forEach(cmd => {
-                if (currentInput.endsWith(cmd)) {
-                    secretCommands[cmd]();
-                    currentInput = '';
-                }
-            });
-            
-            if (currentInput.length > 10) {
-                currentInput = currentInput.slice(-10);
-            }
-        });
-    }
-};
-
-// Initialize all features
-document.addEventListener('DOMContentLoaded', () => {
-    achievements.init();
-    snakeGame.init();
-    typingTest.init();
-    easterEggs.init();
-    
-    // Setup game buttons
-    document.querySelector('[data-game="snake"] .play-btn').addEventListener('click', () => {
-        snakeGame.start();
-    });
-});
-
 // Badge Modal Logic
 const badgeDescriptions = {
     explorer: {
@@ -1090,5 +1154,3 @@ badgeModal.addEventListener('click', (e) => {
         badgeModal.style.display = 'none';
     }
 });
-
-f861b423c8857ee09dca577b4e1314e3dbfde211
