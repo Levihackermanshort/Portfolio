@@ -161,32 +161,88 @@
             <h2>Projects</h2>
             <div class="projects-grid">
                 <div class="project-card">
-                    <h3>Hospital Management System</h3>
-                    <p>Developed a comprehensive hospital management system using C++ and HTML, featuring patient records, appointment scheduling, and inventory management.</p>
+                    <h3>Space Race 3D (WebGL)</h3>
+                    <p>A futuristic 3D racing game built with WebGL and JavaScript. Race through space, avoid obstacles, and compete for the best time!</p>
+                    <div class="tech-stack">
+                        <span>JavaScript</span>
+                        <span>WebGL</span>
+                        <span>Three.js</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://levihackermanshort.github.io/Space-Race-3D/" target="_blank" class="btn">View Demo</a>
+                        <a href="https://github.com/Levihackermanshort/Space-Race-3D" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>CSS Card Animation</h3>
+                    <p>Beautiful and interactive card animations using only CSS. Great for UI/UX inspiration and learning advanced CSS transitions.</p>
+                    <div class="tech-stack">
+                        <span>CSS</span>
+                        <span>HTML</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://levihackermanshort.github.io/CSS-Card-Animation/" target="_blank" class="btn">View Demo</a>
+                        <a href="https://github.com/Levihackermanshort/CSS-Card-Animation" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>Car Race Game</h3>
+                    <p>A simple car racing game built with JavaScript. Dodge obstacles and try to get the highest score!</p>
+                    <div class="tech-stack">
+                        <span>JavaScript</span>
+                        <span>HTML</span>
+                        <span>CSS</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://levihackermanshort.github.io/Car-Race-Game/" target="_blank" class="btn">View Demo</a>
+                        <a href="https://github.com/Levihackermanshort/Car-Race-Game" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>Zeyad Portfolio</h3>
+                    <p>This portfolio website! Built to showcase my skills, projects, and interactive features like Nexus AI and mini-games.</p>
+                    <div class="tech-stack">
+                        <span>HTML</span>
+                        <span>CSS</span>
+                        <span>JavaScript</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://levihackermanshort.github.io/Portfolio/" target="_blank" class="btn">View Demo</a>
+                        <a href="https://github.com/Levihackermanshort/Zeyad_Portfolio" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>CLIDnD Game</h3>
+                    <p>A command-line Dungeons & Dragons game written in C++. Roll the dice and embark on a text-based adventure!</p>
                     <div class="tech-stack">
                         <span>C++</span>
-                        <span>HTML</span>
-                        <span>SQL</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Levihackermanshort/CLIDnD-game" target="_blank" class="btn btn-secondary">View on GitHub</a>
                     </div>
                 </div>
                 <div class="project-card">
-                    <h3>Database Optimization Project</h3>
-                    <p>Implemented database optimization techniques using Oracle Java JDBC and TOAD, resulting in 15% improved query efficiency and enhanced system performance.</p>
+                    <h3>Car Game</h3>
+                    <p>Another take on the classic car game, built for fun and learning JavaScript game loops.</p>
                     <div class="tech-stack">
-                        <span>Java</span>
-                        <span>JDBC</span>
-                        <span>Oracle</span>
-                        <span>TOAD</span>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <h3>Web Application Development</h3>
-                    <p>Built modern web applications using Firebase, Node.js, and React.js, implementing real-time data synchronization and responsive user interfaces.</p>
-                    <div class="tech-stack">
-                        <span>React.js</span>
-                        <span>Node.js</span>
-                        <span>Firebase</span>
                         <span>JavaScript</span>
+                        <span>HTML</span>
+                        <span>CSS</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Levihackermanshort/Car-game" target="_blank" class="btn btn-secondary">View on GitHub</a>
+                    </div>
+                </div>
+                <div class="project-card">
+                    <h3>Car Racegame</h3>
+                    <p>Yet another car racing game experiment, focusing on different mechanics and UI.</p>
+                    <div class="tech-stack">
+                        <span>JavaScript</span>
+                        <span>HTML</span>
+                        <span>CSS</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="https://github.com/Levihackermanshort/Car-racegame" target="_blank" class="btn btn-secondary">View on GitHub</a>
                     </div>
                 </div>
             </div>
@@ -356,13 +412,16 @@
             <div class="games-container">
                 <div class="game-card" data-game="snake">
                     <h3>Snake</h3>
+                    <div class="game-instructions">Eat the food, avoid the walls and yourself. Use arrow keys to move!</div>
                     <div class="game-preview">
                         <canvas id="snakeCanvas" width="300" height="300"></canvas>
                     </div>
+                    <div class="game-leaderboard">High Score: <span id="snakeHighScore">0</span></div>
                     <button class="play-btn">Play Snake</button>
                 </div>
                 <div class="game-card" data-game="typing">
                     <h3>Typing Test</h3>
+                    <div class="game-instructions">Type the code as fast and accurately as you can. Press Start to begin!</div>
                     <div class="typing-test">
                         <div class="typing-text"></div>
                         <input type="text" class="typing-input" placeholder="Start typing...">
@@ -371,6 +430,7 @@
                             <span class="accuracy">Accuracy: 0%</span>
                         </div>
                     </div>
+                    <div class="game-leaderboard">Best WPM: <span id="typingBestWPM">0</span></div>
                     <button class="play-btn">Start Test</button>
                 </div>
             </div>
@@ -435,6 +495,17 @@
             </div>
         </div>
     </footer>
+
+    <!-- Achievements Modal -->
+    <div id="badgeModal" class="badge-modal" style="display:none;">
+        <div class="badge-modal-content">
+            <span class="badge-modal-close">&times;</span>
+            <div class="badge-modal-icon"></div>
+            <h3 class="badge-modal-title"></h3>
+            <p class="badge-modal-desc"></p>
+            <div class="badge-modal-progress"></div>
+        </div>
+    </div>
 
     <script src="script.js"></script>
     <script src="nexus.js"></script>

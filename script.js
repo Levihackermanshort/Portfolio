@@ -1,3 +1,112 @@
+// Initialize particles.js
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof particlesJS !== 'undefined') {
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#00fff7' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: false },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#00fff7', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 2, direction: 'none', random: false, straight: false, out_mode: 'out' }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: {
+                    onhover: { enable: true, mode: 'grab' },
+                    onclick: { enable: true, mode: 'push' },
+                    resize: true
+                }
+            },
+            retina_detect: true
+        });
+    }
+
+    // Initialize all other features
+    initializeFeatures();
+});
+
+function initializeFeatures() {
+    // Custom cursor
+    const cursor = document.querySelector('.cursor');
+    const cursorFollower = document.querySelector('.cursor-follower');
+
+    if (cursor && cursorFollower) {
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            
+            setTimeout(() => {
+                cursorFollower.style.left = e.clientX + 'px';
+                cursorFollower.style.top = e.clientY + 'px';
+            }, 100);
+        });
+    }
+
+    // Initialize Nexus AI
+    if (typeof NexusAI !== 'undefined') {
+        window.nexusAI = new NexusAI();
+    }
+
+    // Initialize achievements system
+    const achievements = document.querySelectorAll('.achievement-card');
+    if (achievements.length > 0) {
+        achievements.forEach(achievement => {
+            achievement.addEventListener('click', () => {
+                const badge = achievement.dataset.badge;
+                showBadgeDetails(badge);
+            });
+        });
+    }
+
+    // Initialize mini-games
+    const snakeGame = document.querySelector('[data-game="snake"]');
+    const typingGame = document.querySelector('[data-game="typing"]');
+
+    if (snakeGame) {
+        initializeSnakeGame();
+    }
+    if (typingGame) {
+        initializeTypingGame();
+    }
+
+    // Initialize smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Initialize intersection observer for animations
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    // Observe elements for animation
+    document.querySelectorAll('.timeline-item, .project-card, .skill-category, .stat-item').forEach(el => {
+        observer.observe(el);
+    });
+}
+
 // Custom cursor
 const cursor = document.querySelector('.cursor');
 const cursorFollower = document.querySelector('.cursor-follower');
@@ -461,75 +570,6 @@ newStyles.textContent = `
 `;
 document.head.appendChild(newStyles);
 
-// Particle Background Configuration
-particlesJS('particles-js', {
-    particles: {
-        number: {
-            value: 80,
-            density: {
-                enable: true,
-                value_area: 800
-            }
-        },
-        color: {
-            value: '#00f2fe'
-        },
-        shape: {
-            type: 'circle'
-        },
-        opacity: {
-            value: 0.5,
-            random: true
-        },
-        size: {
-            value: 3,
-            random: true
-        },
-        line_linked: {
-            enable: true,
-            distance: 150,
-            color: '#00f2fe',
-            opacity: 0.2,
-            width: 1
-        },
-        move: {
-            enable: true,
-            speed: 2,
-            direction: 'none',
-            random: true,
-            straight: false,
-            out_mode: 'out',
-            bounce: false
-        }
-    },
-    interactivity: {
-        detect_on: 'canvas',
-        events: {
-            onhover: {
-                enable: true,
-                mode: 'grab'
-            },
-            onclick: {
-                enable: true,
-                mode: 'push'
-            },
-            resize: true
-        },
-        modes: {
-            grab: {
-                distance: 140,
-                line_linked: {
-                    opacity: 0.5
-                }
-            },
-            push: {
-                particles_nb: 4
-            }
-        }
-    },
-    retina_detect: true
-});
-
 // Custom Cursor
 const customCursor = document.querySelector('.custom-cursor');
 
@@ -992,6 +1032,63 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('[data-game="snake"] .play-btn').addEventListener('click', () => {
         snakeGame.start();
     });
+});
+
+// Badge Modal Logic
+const badgeDescriptions = {
+    explorer: {
+        icon: '<i class="fas fa-compass"></i>',
+        name: 'Explorer',
+        desc: 'Unlock by visiting all sections of the portfolio. Explore every corner!'
+    },
+    coder: {
+        icon: '<i class="fas fa-code"></i>',
+        name: 'Code Master',
+        desc: 'Unlock by completing the typing test challenge. Show off your coding speed!'
+    },
+    gamer: {
+        icon: '<i class="fas fa-gamepad"></i>',
+        name: 'Gamer',
+        desc: 'Unlock by playing all mini-games. Have fun and beat your high score!'
+    },
+    secret: {
+        icon: '<i class="fas fa-key"></i>',
+        name: 'Secret Finder',
+        desc: 'Unlock by discovering all easter eggs. Can you find them all?'
+    }
+};
+
+const badgeModal = document.getElementById('badgeModal');
+const badgeModalIcon = badgeModal.querySelector('.badge-modal-icon');
+const badgeModalTitle = badgeModal.querySelector('.badge-modal-title');
+const badgeModalDesc = badgeModal.querySelector('.badge-modal-desc');
+const badgeModalProgress = badgeModal.querySelector('.badge-modal-progress');
+const badgeModalClose = badgeModal.querySelector('.badge-modal-close');
+
+// Open modal on badge click
+const achievementCards = document.querySelectorAll('.achievement-card');
+achievementCards.forEach(card => {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', () => {
+        const badge = card.getAttribute('data-badge');
+        const data = achievements.badges[badge];
+        const desc = badgeDescriptions[badge];
+        badgeModalIcon.innerHTML = desc.icon;
+        badgeModalTitle.textContent = desc.name;
+        badgeModalDesc.textContent = desc.desc;
+        badgeModalProgress.innerHTML = `<div class='badge-modal-progress-bar' style='width: ${(data.progress / data.max) * 100}%'></div>`;
+        badgeModal.style.display = 'flex';
+    });
+});
+
+// Close modal
+badgeModalClose.addEventListener('click', () => {
+    badgeModal.style.display = 'none';
+});
+badgeModal.addEventListener('click', (e) => {
+    if (e.target === badgeModal) {
+        badgeModal.style.display = 'none';
+    }
 });
 
 f861b423c8857ee09dca577b4e1314e3dbfde211
