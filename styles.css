@@ -144,6 +144,9 @@ nav {
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
+    box-shadow: 0 0 16px 2px #00fff7cc;
+    background: rgba(10, 25, 47, 0.92);
+    border-bottom: 1.5px solid #00fff744;
 }
 
 .logo {
@@ -161,7 +164,9 @@ nav ul {
 }
 
 nav ul li a {
-    color: var(--text-light);
+    color: #00fff7;
+    text-shadow: 0 0 6px #00fff7cc;
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
     text-decoration: none;
     font-size: 0.9rem;
     position: relative;
@@ -187,6 +192,11 @@ nav ul li a:hover::before {
     opacity: 0.1;
 }
 
+nav ul li a:hover {
+    color: #fff;
+    text-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
+}
+
 /* Hero Section */
 #hero {
     height: 100vh;
@@ -203,15 +213,23 @@ nav ul li a:hover::before {
     max-width: 800px;
 }
 
-.glitch {
-    font-size: 4rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    position: relative;
-    text-shadow: 0.05em 0 0 var(--primary-color),
-                -0.025em -0.05em 0 var(--secondary-color),
-                0.025em 0.05em 0 #ff00ff;
-    animation: glitch 500ms infinite;
+.glitch, .hologram-text {
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
+    color: #00fff7;
+    text-shadow:
+        0 0 8px #00fff7,
+        0 0 16px #00fff7,
+        0 0 32px #00fff7,
+        0 0 64px #00fff7;
+    letter-spacing: 2px;
+    animation: flicker 2s infinite alternate;
+}
+
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    45% { opacity: 0.85; }
+    50% { opacity: 0.7; }
+    55% { opacity: 0.85; }
 }
 
 .subtitle {
@@ -235,6 +253,11 @@ nav ul li a:hover::before {
     position: relative;
     overflow: hidden;
     z-index: 1;
+    box-shadow: 0 0 12px #00fff7cc;
+    border: 1.5px solid #00fff799;
+    background: linear-gradient(90deg, #00fff7 0%, #4facfe 100%);
+    color: #0a192f;
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
 }
 
 .cta-primary::before, .cta-secondary::before {
@@ -268,6 +291,14 @@ section {
     padding: 5rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    opacity: 0;
+    transform: scale(0.98) translateY(40px);
+    transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+section.visible {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    z-index: 2;
 }
 
 h2, h3 {
@@ -427,17 +458,18 @@ h2::after {
 .project-card {
     position: relative;
     overflow: hidden;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(10, 25, 47, 0.85);
     border-radius: 10px;
     padding: 2rem;
     transition: var(--transition);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1.5px solid #00fff799;
+    box-shadow: 0 0 24px 2px #00fff744, 0 0 48px 8px #00fff722;
 }
 
 .project-card:hover {
     transform: var(--hover-transform);
-    box-shadow: var(--card-shadow);
-    border-color: var(--primary-color);
+    box-shadow: 0 0 48px 8px #00fff7cc, 0 0 96px 16px #00fff799;
+    border-color: #00fff7;
 }
 
 .tech-stack {
@@ -784,17 +816,18 @@ footer::before {
     bottom: 32px;
     right: 32px;
     width: 340px;
-    background: rgba(18, 18, 28, 0.7);
+    background: rgba(10, 25, 47, 0.92);
     border-radius: 18px;
-    box-shadow: 0 8px 32px 0 rgba(0,255,255,0.18);
+    box-shadow: 0 0 24px 2px #00fff744;
     backdrop-filter: blur(18px) saturate(1.5);
-    border: 1.5px solid rgba(0,255,255,0.18);
+    border: 1.5px solid #00fff799;
     overflow: hidden;
     z-index: 1002;
     transition: box-shadow 0.3s, transform 0.3s, opacity 0.3s;
     cursor: grab;
     user-select: none;
     animation: widgetpop 0.7s cubic-bezier(.68,-0.55,.27,1.55);
+    font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
 }
 
 @keyframes widgetpop {
@@ -1075,6 +1108,10 @@ footer::before {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     margin: 2rem 0;
+    background: rgba(10, 25, 47, 0.92);
+    border: 1.5px solid #00fff799;
+    box-shadow: 0 0 24px 2px #00fff744;
+    font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
 }
 
 .terminal-header {
@@ -1280,11 +1317,16 @@ footer::before {
     font-weight: 500;
     cursor: pointer;
     transition: var(--transition);
+    box-shadow: 0 0 12px #00fff7cc;
+    border: 1.5px solid #00fff799;
+    background: linear-gradient(90deg, #00fff7 0%, #4facfe 100%);
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
 }
 
 .play-btn:hover {
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
+    box-shadow: 0 0 32px #00fff7, 0 0 64px #00fff7;
+    border-color: #00fff7;
 }
 
 /* Typing Test */
@@ -1488,5 +1530,320 @@ body.matrix-mode .btn:hover {
     0% { box-shadow: 0 0 0 0 var(--primary-color); }
     60% { box-shadow: 0 0 32px 8px var(--primary-color), 0 0 80px 20px var(--secondary-color); }
     100% { box-shadow: 0 0 24px 4px var(--primary-color), 0 0 60px 10px var(--secondary-color); }
+}
+
+/* Scanline Overlay */
+.holo-scanlines {
+    pointer-events: none;
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(0,255,255,0.05) 0px,
+        rgba(0,255,255,0.05) 1px,
+        transparent 2px,
+        transparent 6px
+    );
+    z-index: 9999;
+    mix-blend-mode: lighten;
+    animation: scanmove 2s linear infinite;
+}
+@keyframes scanmove {
+    0% { background-position-y: 0; }
+    100% { background-position-y: 6px; }
+}
+
+/* Button Glow */
+.btn, .play-btn, .cta-primary, .cta-secondary {
+    box-shadow: 0 0 12px #00fff7cc;
+    border: 1.5px solid #00fff799;
+    background: linear-gradient(90deg, #00fff7 0%, #4facfe 100%);
+    color: #0a192f;
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.btn:hover, .play-btn:hover, .cta-primary:hover, .cta-secondary:hover {
+    box-shadow: 0 0 32px #00fff7, 0 0 64px #00fff7;
+    border-color: #00fff7;
+}
+
+/* Hologram/Robotic Effects */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap');
+
+body {
+    background: linear-gradient(120deg, #0a192f 0%, #1a2a3a 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Hero Title Hologram */
+.glitch, .hologram-text {
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
+    color: #00fff7;
+    text-shadow:
+        0 0 8px #00fff7,
+        0 0 16px #00fff7,
+        0 0 32px #00fff7,
+        0 0 64px #00fff7;
+    letter-spacing: 2px;
+    animation: flicker 2s infinite alternate;
+}
+@keyframes flicker {
+    0%, 100% { opacity: 1; }
+    45% { opacity: 0.85; }
+    50% { opacity: 0.7; }
+    55% { opacity: 0.85; }
+}
+
+/* Nav Bar Neon */
+nav {
+    box-shadow: 0 0 16px 2px #00fff7cc;
+    background: rgba(10, 25, 47, 0.92);
+    border-bottom: 1.5px solid #00fff744;
+}
+nav ul li a {
+    color: #00fff7;
+    text-shadow: 0 0 6px #00fff7cc;
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
+}
+nav ul li a:hover {
+    color: #fff;
+    text-shadow: 0 0 12px #00fff7, 0 0 24px #00fff7;
+}
+
+/* Project Cards Holo Glow */
+.project-card {
+    background: rgba(10, 25, 47, 0.85);
+    border: 1.5px solid #00fff799;
+    box-shadow: 0 0 24px 2px #00fff744, 0 0 48px 8px #00fff722;
+    transition: box-shadow 0.3s;
+}
+.project-card:hover {
+    box-shadow: 0 0 48px 8px #00fff7cc, 0 0 96px 16px #00fff799;
+    border-color: #00fff7;
+}
+
+/* Terminal/AI Widget Futuristic */
+.terminal-container, .nexus-widget {
+    background: rgba(10, 25, 47, 0.92);
+    border: 1.5px solid #00fff799;
+    box-shadow: 0 0 24px 2px #00fff744;
+    font-family: 'Share Tech Mono', 'JetBrains Mono', monospace;
+}
+
+/* Button Glow */
+.btn, .play-btn, .cta-primary, .cta-secondary {
+    box-shadow: 0 0 12px #00fff7cc;
+    border: 1.5px solid #00fff799;
+    background: linear-gradient(90deg, #00fff7 0%, #4facfe 100%);
+    color: #0a192f;
+    font-family: 'Orbitron', 'Share Tech Mono', monospace;
+    transition: box-shadow 0.2s, border-color 0.2s;
+}
+.btn:hover, .play-btn:hover, .cta-primary:hover, .cta-secondary:hover {
+    box-shadow: 0 0 32px #00fff7, 0 0 64px #00fff7;
+    border-color: #00fff7;
+}
+
+/* Portal and Spaceship Sci-Fi Hero */
+.portal-container {
+    position: relative;
+    width: 320px;
+    height: 320px;
+    margin: 0 auto 2rem auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.portal-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 320px;
+    height: 320px;
+    z-index: 1;
+    animation: portal-rotate 8s linear infinite;
+}
+@keyframes portal-rotate {
+    0% { transform: rotate(0deg) scale(1); }
+    100% { transform: rotate(360deg) scale(1.03); }
+}
+.spaceship-svg {
+    position: absolute;
+    left: 50%;
+    top: 20%;
+    width: 56px;
+    height: 56px;
+    z-index: 2;
+    transform: translate(-50%, -50%) rotate(-15deg);
+    filter: drop-shadow(0 0 16px #00fff7cc);
+    animation: spaceship-float 3s ease-in-out infinite alternate;
+}
+@keyframes spaceship-float {
+    0% { transform: translate(-50%, -50%) rotate(-15deg) scale(1); }
+    100% { transform: translate(-50%, -60%) rotate(-10deg) scale(1.08); }
+}
+
+/* Ensure hero text is above portal */
+.hero-content h1, .hero-content .subtitle, .hero-content .cta-buttons {
+    position: relative;
+    z-index: 3;
+}
+
+/* Starfield Canvas */
+#starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 0;
+    pointer-events: none;
+    display: block;
+}
+
+/* Floating Planets/Asteroids */
+.planet-svg {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    opacity: 0.7;
+    pointer-events: none;
+    z-index: 2;
+    filter: drop-shadow(0 0 12px #00fff7cc);
+    animation: float-planet 12s infinite linear;
+}
+.planet1 { top: 8%; left: 80%; animation-delay: 0s; }
+.planet2 { bottom: 12%; left: 15%; animation-delay: -4s; }
+.planet3 { top: 60%; right: 10%; animation-delay: -8s; }
+@keyframes float-planet {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-20px) scale(1.08); }
+    100% { transform: translateY(0) scale(1); }
+}
+
+/* Interactive Portal Effects */
+.portal-container {
+    cursor: pointer;
+}
+.portal-svg {
+    transition: filter 0.3s, opacity 0.3s;
+}
+.portal-container:hover .portal-svg {
+    filter: drop-shadow(0 0 32px #00fff7cc) brightness(1.2);
+    opacity: 0.95;
+    animation: portal-pulse 0.7s;
+}
+@keyframes portal-pulse {
+    0% { filter: drop-shadow(0 0 0px #00fff7cc); opacity: 0.7; }
+    50% { filter: drop-shadow(0 0 48px #00fff7cc); opacity: 1; }
+    100% { filter: drop-shadow(0 0 0px #00fff7cc); opacity: 0.7; }
+}
+.portal-container:active .portal-svg {
+    animation: portal-ripple 0.5s;
+}
+@keyframes portal-ripple {
+    0% { transform: scale(1); opacity: 1; }
+    70% { transform: scale(1.12); opacity: 0.7; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.music-widget {
+    position: fixed;
+    bottom: 32px;
+    left: 32px;
+    z-index: 1200;
+    transition: all 0.3s ease;
+}
+
+.music-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(10, 25, 47, 0.92);
+    border: 1.5px solid #00fff799;
+    border-radius: 50px;
+    padding: 12px 20px;
+    color: #00fff7;
+    cursor: pointer;
+    font-size: 1.2rem;
+    box-shadow: 0 0 24px 2px #00fff744;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+}
+
+.music-toggle:hover {
+    box-shadow: 0 0 32px 4px #00fff788;
+    transform: translateY(-2px);
+}
+
+.music-toggle.playing {
+    background: rgba(0, 255, 247, 0.15);
+    border-color: #00fff7;
+}
+
+.music-toggle .fas {
+    font-size: 1.2rem;
+}
+
+.music-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 0.8rem;
+    line-height: 1.2;
+    margin-left: 4px;
+}
+
+.song-name {
+    color: #00fff7;
+    font-weight: 600;
+}
+
+.artist-name {
+    color: #4facfe;
+    font-size: 0.7rem;
+}
+
+@media (max-width: 600px) {
+    .music-widget {
+        left: 16px;
+        bottom: 16px;
+    }
+    
+    .music-toggle {
+        padding: 10px 16px;
+    }
+    
+    .music-info {
+        font-size: 0.7rem;
+    }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.music-toggle.playing .fas {
+    animation: pulse 2s infinite;
+}
+
+.portal-logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 200px;
+    height: 200px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 2;
+    object-fit: cover;
+    box-shadow: 0 0 24px #00fff7cc;
+    animation: pulse-logo 3s ease-in-out infinite;
+}
+
+@keyframes pulse-logo {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
