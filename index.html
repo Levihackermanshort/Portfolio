@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <canvas id="starfield"></canvas>
     <div id="particles-js"></div>
     <div class="custom-cursor"></div>
     <div class="cursor"></div>
@@ -25,6 +26,10 @@
             <i class="fab fa-node-js"></i>
             <i class="fas fa-database"></i>
             <i class="fas fa-code"></i>
+            <!-- New floating planets/asteroids -->
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1fa90.png" alt="Ringed Planet" class="planet-svg planet1" />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f311.png" alt="Moon" class="planet-svg planet2" />
+            <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1fa91.png" alt="Asteroid" class="planet-svg planet3" />
         </div>
     </div>
 
@@ -96,6 +101,23 @@
     <main>
         <section id="hero">
             <div class="hero-content">
+                <div class="portal-container">
+                    <svg class="portal-svg" width="320" height="320" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <ellipse cx="160" cy="160" rx="120" ry="120" stroke="#00fff7" stroke-width="8" opacity="0.7" filter="url(#glow)"/>
+                        <ellipse cx="160" cy="160" rx="100" ry="100" stroke="#4facfe" stroke-width="4" opacity="0.4"/>
+                        <defs>
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="12" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                    </svg>
+                    <img src="brain-tech-ai.png" alt="Brain Tech AI Logo" class="portal-logo" />
+                    <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f680.png" alt="Spaceship" class="spaceship-svg" />
+                </div>
                 <h1 class="glitch" data-text="Zeyad Maeen">Zeyad Maeen</h1>
                 <p class="subtitle">Software Engineering Student | Backend Developer</p>
                 <div class="cta-buttons">
@@ -506,8 +528,23 @@
         </div>
     </div>
 
+    <div class="holo-scanlines"></div>
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js" defer></script>
     <script src="script.js" defer></script>
     <script src="nexus.js" defer></script>
+
+    <!-- Music Widget: Boomplay Embed for Snowfall by Øneheart -->
+    <div class="music-widget">
+        <audio id="backgroundMusic" loop>
+            <source src="music/neheart_reidenshi_-_snowfall_Super_Sped_Up_(Hydr0.org).mp3" type="audio/mpeg">
+        </audio>
+        <button id="musicToggle" class="music-toggle" title="Toggle Background Music">
+            <i class="fas fa-music"></i>
+            <div class="music-info">
+                <span class="song-name">Snowfall</span>
+                <span class="artist-name">Øneheart</span>
+            </div>
+        </button>
+    </div>
 </body>
 </html>
