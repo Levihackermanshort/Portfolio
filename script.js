@@ -523,6 +523,11 @@ function initializeFeatures() {
     document.querySelectorAll('.timeline-item, .project-card, .skill-category, .stat-item').forEach(el => {
         observer.observe(el);
     });
+
+    // Force all .scroll-animate elements to be visible on page load
+    document.querySelectorAll('.scroll-animate').forEach(el => {
+        el.classList.add('scrolled');
+    });
 }
 
 // Custom cursor
