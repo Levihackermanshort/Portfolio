@@ -8,8 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 </head>
 <body>
+    <div id="particles-js"></div>
+    <div class="custom-cursor"></div>
     <div class="cursor"></div>
     <div class="cursor-follower"></div>
 
@@ -310,6 +313,69 @@
             </ul>
         </section>
 
+        <section id="achievements" class="section">
+            <h2>Achievements & Badges</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card" data-badge="explorer">
+                    <div class="badge-icon"><i class="fas fa-compass"></i></div>
+                    <h3>Explorer</h3>
+                    <p>Visited all sections of the portfolio</p>
+                    <div class="badge-progress">
+                        <div class="progress-bar" data-progress="0"></div>
+                    </div>
+                </div>
+                <div class="achievement-card" data-badge="coder">
+                    <div class="badge-icon"><i class="fas fa-code"></i></div>
+                    <h3>Code Master</h3>
+                    <p>Completed the typing test challenge</p>
+                    <div class="badge-progress">
+                        <div class="progress-bar" data-progress="0"></div>
+                    </div>
+                </div>
+                <div class="achievement-card" data-badge="gamer">
+                    <div class="badge-icon"><i class="fas fa-gamepad"></i></div>
+                    <h3>Gamer</h3>
+                    <p>Played all mini-games</p>
+                    <div class="badge-progress">
+                        <div class="progress-bar" data-progress="0"></div>
+                    </div>
+                </div>
+                <div class="achievement-card" data-badge="secret">
+                    <div class="badge-icon"><i class="fas fa-key"></i></div>
+                    <h3>Secret Finder</h3>
+                    <p>Discovered all easter eggs</p>
+                    <div class="badge-progress">
+                        <div class="progress-bar" data-progress="0"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="minigames" class="section">
+            <h2>Mini Games</h2>
+            <div class="games-container">
+                <div class="game-card" data-game="snake">
+                    <h3>Snake</h3>
+                    <div class="game-preview">
+                        <canvas id="snakeCanvas" width="300" height="300"></canvas>
+                    </div>
+                    <button class="play-btn">Play Snake</button>
+                </div>
+                <div class="game-card" data-game="typing">
+                    <h3>Typing Test</h3>
+                    <div class="typing-test">
+                        <div class="typing-text"></div>
+                        <input type="text" class="typing-input" placeholder="Start typing...">
+                        <div class="typing-stats">
+                            <span class="wpm">WPM: 0</span>
+                            <span class="accuracy">Accuracy: 0%</span>
+                        </div>
+                    </div>
+                    <button class="play-btn">Start Test</button>
+                </div>
+            </div>
+        </section>
+
         <section id="contact">
             <h2>Get in Touch</h2>
             <div class="contact-container">
@@ -329,6 +395,33 @@
                     <textarea placeholder="Message" required></textarea>
                     <button type="submit" class="submit-btn">Send Message</button>
                 </form>
+            </div>
+        </section>
+
+        <section id="terminal" class="section">
+            <div class="container">
+                <div class="terminal-container">
+                    <div class="terminal-header">
+                        <div class="terminal-buttons">
+                            <span class="terminal-button close"></span>
+                            <span class="terminal-button minimize"></span>
+                            <span class="terminal-button maximize"></span>
+                        </div>
+                        <div class="terminal-title">Terminal</div>
+                    </div>
+                    <div class="terminal-body">
+                        <div class="terminal-output">
+                            <div class="terminal-line">
+                                <span class="terminal-prompt">$</span>
+                                <span class="terminal-text">Welcome to my terminal! Type 'help' to see available commands.</span>
+                            </div>
+                        </div>
+                        <div class="terminal-input-line">
+                            <span class="terminal-prompt">$</span>
+                            <input type="text" class="terminal-input" autofocus>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
