@@ -26,11 +26,26 @@
         </div>
     </div>
 
+    <!-- Animated SVG Circuit Background -->
+    <div class="svg-circuit-bg">
+        <svg width="100%" height="100%" viewBox="0 0 1920 1080" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="100,100 400,100 400,400 800,400" stroke="#00fff7" stroke-width="2" stroke-dasharray="10 10"/>
+            <polyline points="600,200 600,600 1200,600" stroke="#00fff7" stroke-width="2" stroke-dasharray="10 10"/>
+            <circle cx="400" cy="100" r="8" fill="#00fff7" opacity="0.7">
+                <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="800" cy="400" r="8" fill="#00fff7" opacity="0.7">
+                <animate attributeName="r" values="8;14;8" dur="2s" repeatCount="indefinite"/>
+            </circle>
+        </svg>
+    </div>
+
     <!-- Nexus AI Assistant Widget -->
     <div class="nexus-widget" id="nexusWidget">
         <div class="nexus-header">
-            <div class="nexus-avatar">
-                <i class="fas fa-robot"></i>
+            <div class="nexus-avatar animated-avatar">
+                <img src="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/72x72/1f916.png" alt="Nexus Avatar" width="32" height="32"/>
+                <span class="avatar-pulse"></span>
             </div>
             <div class="nexus-status">
                 <span class="status-dot"></span>
@@ -43,6 +58,9 @@
                 <div class="message nexus">
                     <p>Hello! I'm Nexus, Zeyad's AI assistant. How can I help you today?</p>
                 </div>
+            </div>
+            <div class="nexus-typing-indicator" id="nexusTyping" style="display:none;">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
             </div>
             <div class="chat-input">
                 <input type="text" id="nexusInput" placeholder="Ask me anything about Zeyad...">

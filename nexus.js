@@ -6,9 +6,13 @@ class NexusAI {
         this.input = document.getElementById('nexusInput');
         this.sendButton = document.getElementById('nexusSend');
         this.minimizeButton = document.querySelector('.nexus-minimize');
-        
+        this.typingIndicator = document.getElementById('nexusTyping');
+        this.isMinimized = false;
+        this.dragOffset = { x: 0, y: 0 };
+        this.isDragging = false;
         this.setupEventListeners();
         this.setupKnowledgeBase();
+        this.setupDraggable();
     }
 
     setupEventListeners() {
@@ -35,35 +39,28 @@ class NexusAI {
     handleUserInput() {
         const userInput = this.input.value.trim();
         if (!userInput) return;
-
-        // Add user message
         this.addMessage(userInput, 'user');
         this.input.value = '';
-
-        // Process and respond
+        this.showTypingIndicator();
         setTimeout(() => {
             const response = this.generateResponse(userInput.toLowerCase());
+            this.hideTypingIndicator();
             this.addMessage(response, 'nexus');
-        }, 500);
+        }, 900 + Math.random() * 600);
     }
 
     generateResponse(input) {
-        // Check for specific keywords
         for (const [key, value] of Object.entries(this.knowledgeBase)) {
             if (input.includes(key)) {
                 return value;
             }
         }
-
-        // Default responses
         if (input.includes('hello') || input.includes('hi')) {
             return "Hello! I'm Nexus, Zeyad's AI assistant. How can I help you today?";
         }
-
         if (input.includes('help')) {
             return "I can tell you about Zeyad's experience, skills, education, projects, or contact information. Just ask me anything!";
         }
-
         return "I'm not sure about that. You can ask me about Zeyad's experience, skills, education, projects, or contact information.";
     }
 
@@ -75,11 +72,60 @@ class NexusAI {
         this.messages.scrollTop = this.messages.scrollHeight;
     }
 
+    showTypingIndicator() {
+        this.typingIndicator.style.display = 'flex';
+    }
+    hideTypingIndicator() {
+        this.typingIndicator.style.display = 'none';
+    }
+
     toggleMinimize() {
+        this.isMinimized = !this.isMinimized;
         this.widget.classList.toggle('minimized');
         const icon = this.minimizeButton.querySelector('i');
-        icon.className = this.widget.classList.contains('minimized') ? 
-            'fas fa-plus' : 'fas fa-minus';
+        icon.className = this.isMinimized ? 'fas fa-plus' : 'fas fa-minus';
+        if (!this.isMinimized) {
+            setTimeout(() => this.input.focus(), 350);
+        }
+    }
+
+    setupDraggable() {
+        const header = this.widget.querySelector('.nexus-header');
+        header.addEventListener('mousedown', (e) => this.startDrag(e));
+        document.addEventListener('mousemove', (e) => this.onDrag(e));
+        document.addEventListener('mouseup', () => this.endDrag());
+        // Touch support
+        header.addEventListener('touchstart', (e) => this.startDrag(e.touches[0]));
+        document.addEventListener('touchmove', (e) => this.onDrag(e.touches[0]));
+        document.addEventListener('touchend', () => this.endDrag());
+    }
+    startDrag(e) {
+        if (this.isMinimized) return;
+        this.isDragging = true;
+        const rect = this.widget.getBoundingClientRect();
+        this.dragOffset.x = e.clientX - rect.left;
+        this.dragOffset.y = e.clientY - rect.top;
+        this.widget.style.transition = 'none';
+        this.widget.style.opacity = '0.95';
+    }
+    onDrag(e) {
+        if (!this.isDragging) return;
+        let x = e.clientX - this.dragOffset.x;
+        let y = e.clientY - this.dragOffset.y;
+        // Keep within viewport
+        x = Math.max(0, Math.min(window.innerWidth - this.widget.offsetWidth, x));
+        y = Math.max(0, Math.min(window.innerHeight - this.widget.offsetHeight, y));
+        this.widget.style.left = x + 'px';
+        this.widget.style.top = y + 'px';
+        this.widget.style.right = 'auto';
+        this.widget.style.bottom = 'auto';
+        this.widget.style.position = 'fixed';
+    }
+    endDrag() {
+        if (!this.isDragging) return;
+        this.isDragging = false;
+        this.widget.style.transition = '';
+        this.widget.style.opacity = '';
     }
 }
 
