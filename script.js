@@ -396,45 +396,6 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Initializing features');
         initializeFeatures();
         
-        // Initialize achievements system
-        console.log('Initializing achievements');
-        if (typeof achievements !== 'undefined') {
-            achievements.init();
-        } else {
-            console.error('Achievements system is not defined');
-        }
-
-        // Initialize games
-        console.log('Initializing games');
-        if (typeof snakeGame !== 'undefined') {
-            snakeGame.init();
-        } else {
-            console.error('Snake game is not defined');
-        }
-        
-        if (typeof typingTest !== 'undefined') {
-            typingTest.init();
-        } else {
-            console.error('Typing test is not defined');
-        }
-
-        // Initialize easter eggs
-        console.log('Initializing easter eggs');
-        if (typeof easterEggs !== 'undefined') {
-            easterEggs.init();
-        } else {
-            console.error('Easter eggs system is not defined');
-        }
-
-        // Setup game buttons
-        const snakeButton = document.querySelector('[data-game="snake"] .play-btn');
-        if (snakeButton) {
-            snakeButton.addEventListener('click', () => {
-                if (typeof snakeGame !== 'undefined') {
-                    snakeGame.start();
-                }
-            });
-        }
     } catch (error) {
         console.error('Error during initialization:', error);
     }
@@ -463,25 +424,69 @@ function initializeFeatures() {
     }
 
     // Initialize achievements system
-    const achievements = document.querySelectorAll('.achievement-card');
-    if (achievements.length > 0) {
-        achievements.forEach(achievement => {
-            achievement.addEventListener('click', () => {
-                const badge = achievement.dataset.badge;
-                showBadgeDetails(badge);
+    if (typeof achievements !== 'undefined') {
+        achievements.init();
+    }
+
+    // Initialize games
+    if (typeof snakeGame !== 'undefined') {
+        snakeGame.init();
+    }
+    
+    if (typeof typingTest !== 'undefined') {
+        typingTest.init();
+    }
+
+    // Initialize easter eggs
+    if (typeof easterEggs !== 'undefined') {
+        easterEggs.init();
+    }
+
+    // Initialize badge modal
+    const badgeModal = document.getElementById('badgeModal');
+    if (badgeModal) {
+        const badgeModalIcon = badgeModal.querySelector('.badge-modal-icon');
+        const badgeModalTitle = badgeModal.querySelector('.badge-modal-title');
+        const badgeModalDesc = badgeModal.querySelector('.badge-modal-desc');
+        const badgeModalProgress = badgeModal.querySelector('.badge-modal-progress');
+        const badgeModalClose = badgeModal.querySelector('.badge-modal-close');
+
+        // Open modal on badge click
+        const achievementCards = document.querySelectorAll('.achievement-card');
+        achievementCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', () => {
+                const badge = card.getAttribute('data-badge');
+                const data = achievements.badges[badge];
+                const desc = badgeDescriptions[badge];
+                if (badgeModalIcon && desc) {
+                    badgeModalIcon.innerHTML = desc.icon;
+                }
+                if (badgeModalTitle && desc) {
+                    badgeModalTitle.textContent = desc.name;
+                }
+                if (badgeModalDesc && desc) {
+                    badgeModalDesc.textContent = desc.desc;
+                }
+                if (badgeModalProgress && data) {
+                    badgeModalProgress.innerHTML = `<div class='badge-modal-progress-bar' style='width: ${(data.progress / data.max) * 100}%'></div>`;
+                }
+                badgeModal.style.display = 'flex';
             });
         });
-    }
 
-    // Initialize mini-games
-    const snakeGame = document.querySelector('[data-game="snake"]');
-    const typingGame = document.querySelector('[data-game="typing"]');
-
-    if (snakeGame) {
-        initializeSnakeGame();
-    }
-    if (typingGame) {
-        initializeTypingGame();
+        // Close modal
+        if (badgeModalClose) {
+            badgeModalClose.addEventListener('click', () => {
+                badgeModal.style.display = 'none';
+            });
+        }
+        
+        badgeModal.addEventListener('click', (e) => {
+            if (e.target === badgeModal) {
+                badgeModal.style.display = 'none';
+            }
+        });
     }
 
     // Initialize smooth scrolling
@@ -1154,3 +1159,29 @@ badgeModal.addEventListener('click', (e) => {
         badgeModal.style.display = 'none';
     }
 });
+
+function showBadgeDetails(badge) {
+    const badgeModal = document.getElementById('badgeModal');
+    const badgeModalIcon = badgeModal.querySelector('.badge-modal-icon');
+    const badgeModalTitle = badgeModal.querySelector('.badge-modal-title');
+    const badgeModalDesc = badgeModal.querySelector('.badge-modal-desc');
+    const badgeModalProgress = badgeModal.querySelector('.badge-modal-progress');
+    
+    const data = achievements.badges[badge];
+    const desc = badgeDescriptions[badge];
+    
+    if (badgeModalIcon && desc) {
+        badgeModalIcon.innerHTML = desc.icon;
+    }
+    if (badgeModalTitle && desc) {
+        badgeModalTitle.textContent = desc.name;
+    }
+    if (badgeModalDesc && desc) {
+        badgeModalDesc.textContent = desc.desc;
+    }
+    if (badgeModalProgress && data) {
+        badgeModalProgress.innerHTML = `<div class='badge-modal-progress-bar' style='width: ${(data.progress / data.max) * 100}%'></div>`;
+    }
+    
+    badgeModal.style.display = 'flex';
+}
