@@ -1190,3 +1190,216 @@ function showBadgeDetails(badge) {
     
     badgeModal.style.display = 'flex';
 }
+
+// Animated Starfield Background
+(function starfieldInit() {
+    const canvas = document.getElementById('starfield');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let w = window.innerWidth;
+    let h = window.innerHeight;
+    canvas.width = w;
+    canvas.height = h;
+    let stars = [];
+    const STAR_COUNT = Math.floor((w * h) / 1800);
+    for (let i = 0; i < STAR_COUNT; i++) {
+        stars.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            r: Math.random() * 1.2 + 0.2,
+            d: Math.random() * 0.5 + 0.2,
+            tw: Math.random() * Math.PI * 2
+        });
+    }
+    function draw() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < stars.length; i++) {
+            let s = stars[i];
+            let twinkle = Math.abs(Math.sin(s.tw + Date.now() * 0.001 * s.d));
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r + twinkle * 0.7, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(0,255,255,${0.5 + twinkle * 0.5})`;
+            ctx.shadowColor = '#00fff7';
+            ctx.shadowBlur = 8 + twinkle * 8;
+            ctx.fill();
+            ctx.closePath();
+        }
+        ctx.shadowBlur = 0;
+        requestAnimationFrame(draw);
+    }
+    draw();
+    window.addEventListener('resize', () => {
+        w = window.innerWidth;
+        h = window.innerHeight;
+        canvas.width = w;
+        canvas.height = h;
+        stars = [];
+        for (let i = 0; i < STAR_COUNT; i++) {
+            stars.push({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 1.2 + 0.2,
+                d: Math.random() * 0.5 + 0.2,
+                tw: Math.random() * Math.PI * 2
+            });
+        }
+    });
+})();
+
+// Space Music Toggle
+(function musicToggleInit() {
+    const music = document.getElementById('spaceMusic');
+    const btn = document.getElementById('musicToggle');
+    if (!music || !btn) return;
+    let playing = false;
+    btn.addEventListener('click', () => {
+        if (playing) {
+            music.pause();
+            btn.classList.remove('active');
+        } else {
+            music.volume = 0.4;
+            music.play();
+            btn.classList.add('active');
+        }
+        playing = !playing;
+    });
+})();
+
+// Portal Sound Effect on Click
+(function portalSoundInit() {
+    const portal = document.querySelector('.portal-container');
+    if (!portal) return;
+    const audio = new Audio('https://cdn.pixabay.com/audio/2022/03/15/audio_115b9b1b7e.mp3');
+    portal.addEventListener('click', (e) => {
+        // Only play if not clicking the music button
+        if (e.target.classList.contains('music-toggle')) return;
+        audio.currentTime = 0;
+        audio.volume = 0.5;
+        audio.play();
+    });
+})();
+
+// Warp/Teleport Section Transitions
+(function sectionTransitionsInit() {
+    function revealSections() {
+        document.querySelectorAll('section').forEach(section => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top < window.innerHeight - 80) {
+                section.classList.add('visible');
+            }
+        });
+    }
+    window.addEventListener('scroll', revealSections);
+    window.addEventListener('load', revealSections);
+    revealSections();
+    // Smooth scroll and animate on nav click
+    document.querySelectorAll('nav ul li a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                setTimeout(() => target.classList.add('visible'), 400);
+            }
+        });
+    });
+})();
+
+// Music Widget Controls
+document.addEventListener('DOMContentLoaded', function() {
+    const musicWidget = document.querySelector('.music-widget');
+    const toggleBtn = musicWidget.querySelector('.toggle-minimize');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+
+    // Toggle minimize state
+    toggleBtn.addEventListener('click', () => {
+        musicWidget.classList.toggle('minimized');
+        toggleBtn.querySelector('i').classList.toggle('fa-chevron-right');
+        toggleBtn.querySelector('i').classList.toggle('fa-chevron-left');
+    });
+
+    // Auto-minimize after 5 seconds of inactivity
+    let inactivityTimer;
+    const startInactivityTimer = () => {
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(() => {
+            if (!musicWidget.classList.contains('minimized')) {
+                musicWidget.classList.add('minimized');
+                toggleBtn.querySelector('i').classList.remove('fa-chevron-right');
+                toggleBtn.querySelector('i').classList.add('fa-chevron-left');
+            }
+        }, 5000);
+    };
+
+    // Reset timer on mouse movement over widget
+    musicWidget.addEventListener('mousemove', () => {
+        if (musicWidget.classList.contains('minimized')) {
+            musicWidget.classList.remove('minimized');
+            toggleBtn.querySelector('i').classList.add('fa-chevron-right');
+            toggleBtn.querySelector('i').classList.remove('fa-chevron-left');
+        }
+        startInactivityTimer();
+    });
+
+    // Start timer initially
+    startInactivityTimer();
+
+    // Handle background music
+    const iframe = musicWidget.querySelector('iframe');
+    iframe.addEventListener('load', () => {
+        // Try to sync background music with iframe player
+        try {
+            const iframeWindow = iframe.contentWindow;
+            iframeWindow.postMessage('PLAY', '*');
+        } catch (e) {
+            console.log('Could not autoplay music:', e);
+        }
+    });
+});
+
+// Background Music Control
+document.addEventListener('DOMContentLoaded', function() {
+    const musicToggle = document.getElementById('musicToggle');
+    const backgroundMusic = document.getElementById('backgroundMusic');
+    let isPlaying = false;
+
+    // Set initial volume
+    backgroundMusic.volume = 0.4;
+
+    musicToggle.addEventListener('click', () => {
+        if (isPlaying) {
+            backgroundMusic.pause();
+            musicToggle.classList.remove('playing');
+        } else {
+            // Play music
+            const playPromise = backgroundMusic.play();
+            
+            // Handle Autoplay Policy
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    musicToggle.classList.add('playing');
+                }).catch(error => {
+                    console.log("Autoplay prevented:", error);
+                    showNotification("Click again to play music", "info");
+                });
+            }
+        }
+        isPlaying = !isPlaying;
+    });
+
+    // Handle page visibility change
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden && isPlaying) {
+            backgroundMusic.pause();
+            musicToggle.classList.remove('playing');
+            isPlaying = false;
+        }
+    });
+
+    // Add keyboard shortcut (M key) to toggle music
+    document.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'm') {
+            musicToggle.click();
+        }
+    });
+});
