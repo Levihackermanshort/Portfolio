@@ -7,6 +7,71 @@
     --transition: all 0.3s ease;
     --card-shadow: 0 10px 30px -15px rgba(2, 12, 27, 0.7);
     --hover-transform: translateY(-5px);
+    --nexus-bg: rgba(18, 18, 28, 0.7);
+    --nexus-border: rgba(0,255,255,0.18);
+    --nexus-bubble: linear-gradient(120deg, rgba(0,255,255,0.18) 0%, rgba(0,0,0,0.13) 100%);
+    --nexus-user-bubble: linear-gradient(120deg, rgba(255,255,255,0.09) 0%, rgba(0,0,0,0.13) 100%);
+    --nexus-avatar-shadow: #00fff7a0;
+    --nexus-dot: #00ff00;
+    --nexus-mood: #00fff7;
+}
+
+body.light-theme {
+    --primary-color: #007cf0;
+    --secondary-color: #00dfd8;
+    --background-dark: #f6f8fa;
+    --text-light: #222;
+    --text-gray: #555;
+    --nexus-bg: rgba(255,255,255,0.85);
+    --nexus-border: rgba(0,124,240,0.18);
+    --nexus-bubble: linear-gradient(120deg, rgba(0,124,240,0.10) 0%, rgba(0,0,0,0.03) 100%);
+    --nexus-user-bubble: linear-gradient(120deg, rgba(0,223,216,0.09) 0%, rgba(0,0,0,0.03) 100%);
+    --nexus-avatar-shadow: #007cf0a0;
+    --nexus-dot: #00dfd8;
+    --nexus-mood: #007cf0;
+}
+
+body.cyberpunk-theme {
+    --primary-color: #ff00cc;
+    --secondary-color: #333399;
+    --background-dark: #1a0025;
+    --text-light: #fff0fa;
+    --text-gray: #ffb3ec;
+    --nexus-bg: rgba(40,0,60,0.85);
+    --nexus-border: #ff00cc99;
+    --nexus-bubble: linear-gradient(120deg, rgba(255,0,204,0.18) 0%, rgba(51,51,153,0.13) 100%);
+    --nexus-user-bubble: linear-gradient(120deg, rgba(255,255,255,0.09) 0%, rgba(51,51,153,0.13) 100%);
+    --nexus-avatar-shadow: #ff00cca0;
+    --nexus-dot: #ff00cc;
+    --nexus-mood: #ff00cc;
+}
+
+body, .nexus-widget {
+    background: var(--background-dark);
+    color: var(--text-light);
+}
+.nexus-widget {
+    background: var(--nexus-bg);
+    border: 1.5px solid var(--nexus-border);
+}
+.message.nexus {
+    background: var(--nexus-bubble);
+    border: 1.5px solid var(--nexus-border);
+    color: var(--primary-color);
+}
+.message.user {
+    background: var(--nexus-user-bubble);
+    border: 1.5px solid var(--nexus-border);
+    color: var(--text-light);
+}
+.animated-avatar img {
+    box-shadow: 0 0 12px 2px var(--nexus-avatar-shadow);
+}
+.status-dot {
+    background: var(--nexus-dot);
+}
+.nexus-mood {
+    color: var(--nexus-mood);
 }
 
 * {
@@ -17,8 +82,6 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: var(--background-dark);
-    color: var(--text-light);
     line-height: 1.6;
     overflow-x: hidden;
     background: linear-gradient(120deg, #0a192f 0%, #1a2a3a 100%);
@@ -970,4 +1033,29 @@ footer::before {
         border-radius: 12px;
     }
     .svg-circuit-bg { display: none; }
+}
+
+/* --- Theme Switcher Button --- */
+.theme-switcher {
+    background: none;
+    border: none;
+    color: #00fff7;
+    font-size: 1.4rem;
+    margin-left: 1.5rem;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+    z-index: 1100;
+}
+.theme-switcher:hover {
+    color: #ff00ff;
+    transform: scale(1.15) rotate(-15deg);
+}
+
+/* --- Mood Display in Nexus --- */
+.nexus-mood {
+    margin-left: 10px;
+    font-size: 1.2rem;
+    vertical-align: middle;
+    opacity: 0.85;
+    transition: color 0.3s;
 }
